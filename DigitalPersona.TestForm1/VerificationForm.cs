@@ -20,14 +20,14 @@ namespace DigitalPersona.TestForm1
         DPFP.Gui.Verification.VerificationControl verificationControl;
 
         PictureBox picBox;
-        Label lblName;
+        Label lblName, lblAge, lblGender, lblMaritalStatus, lblState, lblLGA;
 
         public VerificationForm(AppWindow owner)
         {
             InitializeComponent();
 
             this.Dock = DockStyle.Fill;
-            this.BackColor = Color.White;
+            this.BackColor = owner.LightColor;
 
             verificationControl = new DPFP.Gui.Verification.VerificationControl()
             {
@@ -52,17 +52,75 @@ namespace DigitalPersona.TestForm1
             };
             this.Controls.Add(lblName);
 
+            lblAge = new Label()
+            {
+                AutoSize = lblName.AutoSize,
+                Font = lblName.Font,
+                TextAlign = lblName.TextAlign,
+                Width = lblName.Width
+            };
+            this.Controls.Add(lblAge);
+
+            lblGender = new Label()
+            {
+                AutoSize = lblName.AutoSize,
+                Font = lblName.Font,
+                TextAlign = lblName.TextAlign,
+                Width = lblName.Width
+            };
+            this.Controls.Add(lblGender);
+
+            lblMaritalStatus = new Label()
+            {
+                AutoSize = lblName.AutoSize,
+                Font = lblName.Font,
+                TextAlign = lblName.TextAlign,
+                Width = lblName.Width
+            };
+            this.Controls.Add(lblMaritalStatus);
+
+            lblState = new Label()
+            {
+                AutoSize = lblName.AutoSize,
+                Font = lblName.Font,
+                TextAlign = lblName.TextAlign,
+                Width = lblName.Width
+            };
+            this.Controls.Add(lblState);
+
+            lblLGA = new Label()
+            {
+                AutoSize = lblName.AutoSize,
+                Font = lblName.Font,
+                TextAlign = lblName.TextAlign,
+                Width = lblName.Width
+            };
+            this.Controls.Add(lblLGA);
+
             this.SizeChanged += delegate
             {
                 verificationControl.Location = new Point((this.Width - verificationControl.Width) / 2, 20);
                 picBox.Location = new Point(verificationControl.Left - picBox.Width, verificationControl.Bottom + 20);
                 lblName.Location = new Point(picBox.Right + 50, picBox.Top);
+                lblAge.Location = new Point(lblName.Left, lblName.Bottom + 20);
+                lblGender.Location = new Point(lblName.Left, lblAge.Bottom + 20);
+                lblMaritalStatus.Location = new Point(lblName.Left, lblGender.Bottom + 20);
+                lblState.Location = new Point(lblName.Left, lblMaritalStatus.Bottom + 20);
+                lblLGA.Location = new Point(lblName.Left, lblState.Bottom + 20);
             };
         }
 
         private void VerificationControl_OnComplete(object Control, DPFP.FeatureSet FeatureSet, 
             ref DPFP.Gui.EventHandlerStatus EventHandlerStatus)
         {
+            picBox.Image = null;
+            lblName.ResetText();
+            lblAge.ResetText();
+            lblGender.ResetText();
+            lblMaritalStatus.ResetText();
+            lblState.ResetText();
+            lblLGA.ResetText();
+
             IdpDb db = new IdpDb();
             bool breakOuter = false;
             foreach (Idp person in db.GetPersons())
@@ -90,6 +148,21 @@ namespace DigitalPersona.TestForm1
                                 (!string.IsNullOrEmpty(person.LastName) ? person.LastName + " " : "") +
                                 (!string.IsNullOrEmpty(person.OtherNames) ? person.OtherNames + " " : "");
                             lblName.Text = nm;
+                            if (person.DoB != null)
+                            {
+                                int age = DateTime.Now.Year - person.DoB.Year;
+                                lblAge.Text = person.DoB.Day + "/" + person.DoB.Month + "/" + person.DoB.Year +
+                                    " (" + age + " year(s) old)";
+                            }
+                            else
+                            {
+                                int age = DateTime.Now.Year - person.YoB;
+                                lblAge.Text = "About " + age + " year(s) old";
+                            }
+                            lblGender.Text = person.Gender;
+                            lblMaritalStatus.Text = person.MaritalStatus;
+                            lblState.Text = person.State;
+                            lblLGA.Text = person.LGA;
                             breakOuter = true;
                             break;
                         }

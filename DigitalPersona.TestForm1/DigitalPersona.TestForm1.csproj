@@ -93,6 +93,19 @@
     </Compile>
     <Compile Include="Idp.cs" />
     <Compile Include="IdpDb.cs" />
+    <Compile Include="IdWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IdWindow.Designer.cs">
+      <DependentUpon>IdWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LoginForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QRCodeGenerator.cs" />
     <Compile Include="RegistrationForm.cs">
       <SubType>UserControl</SubType>
     </Compile>

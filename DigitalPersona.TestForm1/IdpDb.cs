@@ -38,7 +38,7 @@ namespace DigitalPersona.TestForm1
             MySqlCommand selectJoin = new MySqlCommand();
             selectJoin.Connection = mySqlConnection;
             selectJoin.CommandText =
-                "SELECT b.id, first_name, last_name, other_names, dob, yob, "+
+                "SELECT b.id, first_name, last_name, other_names, dob, yob, gender, marital_status, state, lga, " +
                 "f.finger_1, finger_2, finger_3, finger_4, finger_5, finger_6, finger_7, finger_8, finger_9, finger_10, " +
                 "p.photo " +
                 "from bios as b join photos as p on b.id = p.id join fingers as f on b.id = f.id";
@@ -57,6 +57,10 @@ namespace DigitalPersona.TestForm1
                     person.OtherNames = dr.GetString("other_names");
                     person.DoB = dr.GetDateTime("dob");
                     person.YoB = dr.GetInt32("yob");
+                    person.Gender = dr.GetString("gender");
+                    person.MaritalStatus = dr.GetString("marital_status");
+                    person.State = dr.GetString("state");
+                    person.LGA = dr.GetString("lga");
 
                     for (int index = 0; index < person.FingerTemplates.Length; index++)
                     {
@@ -90,22 +94,26 @@ namespace DigitalPersona.TestForm1
             return persons.ToArray();
         }
 
-        public bool SavePerson(Idp person)
+        public bool SavePerson(Idp person, out string id)
         {
             MySqlCommand insertBio = new MySqlCommand(), 
                 insertPhoto = new MySqlCommand(),
                 insertFingers = new MySqlCommand();
             insertBio.Connection = insertPhoto.Connection = insertFingers.Connection = mySqlConnection;
-            var id = DateTime.Now.ToString();
+            id = DateTime.Now.ToString();
 
             insertBio.CommandText =
-                "INSERT INTO bios VALUES(@id, @first_name, @last_name, @other_names, @dob, @yob)";
+                "INSERT INTO bios VALUES(@id, @first_name, @last_name, @other_names, @dob, @yob, @gender, @marital_status, @state, @lga)";
             insertBio.Parameters.Add("id", MySqlDbType.VarChar).Value = id;
             insertBio.Parameters.Add("first_name", MySqlDbType.VarChar).Value = person.FirstName;
             insertBio.Parameters.Add("last_name", MySqlDbType.VarChar).Value = person.LastName;
             insertBio.Parameters.Add("other_names", MySqlDbType.VarChar).Value = person.OtherNames;
             insertBio.Parameters.Add("dob", MySqlDbType.DateTime).Value = person.DoB;
             insertBio.Parameters.Add("yob", MySqlDbType.Int32).Value = person.YoB;
+            insertBio.Parameters.Add("gender", MySqlDbType.VarChar).Value = person.Gender;
+            insertBio.Parameters.Add("marital_status", MySqlDbType.VarChar).Value = person.MaritalStatus;
+            insertBio.Parameters.Add("state", MySqlDbType.VarChar).Value = person.State;
+            insertBio.Parameters.Add("lga", MySqlDbType.VarChar).Value = person.LGA;
 
             insertPhoto.CommandText =
                 "INSERT INTO photos VALUES(@id, @photo)";

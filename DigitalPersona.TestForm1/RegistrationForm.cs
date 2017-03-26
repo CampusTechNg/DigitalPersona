@@ -15,11 +15,13 @@ namespace DigitalPersona.TestForm1
     {
         string serial = "1284476B-2B20-CE4C-947B-0F1CF99144F6";
         DPFP.Template[] capturedTemplates = new DPFP.Template[10];
+        Dictionary<string, string[]> statesAndLGAs;
 
         HintedTextBox txtFirstname, txtLastName, txtOtherNames;
         RadioButton btnDob, btnYoB;
         DateTimePicker datePicker;
         NumericUpDown txtAge;
+        ComboBox genderList, maritalStatusList, statesList, lgaList;
         CameraControl camControl;
         DPFP.Gui.Enrollment.EnrollmentControl enrollmentControl;
         Button btnSave;
@@ -28,8 +30,10 @@ namespace DigitalPersona.TestForm1
         {
             InitializeComponent();
 
+            PopulateStatesAndLGAs();
+
             this.Dock = DockStyle.Fill;
-            this.BackColor = Color.White;
+            this.BackColor = owner.LightColor;
 
             txtFirstname = new HintedTextBox("first name")
             {
@@ -128,19 +132,71 @@ namespace DigitalPersona.TestForm1
             this.Controls.Add(txtAge);
             //this.Controls.Add(lblLine4);
 
-            camControl = new TestForm1.RegistrationForm.CameraControl();
+            genderList = new ComboBox()
+            {
+                //DropDownStyle = ComboBoxStyle.DropDownList,
+                Location = new Point(datePicker.Left, datePicker.Bottom + 20),
+                Text = "select gender",
+                Width = btnDob.Width,
+            };
+            genderList.Items.Add("Male");
+            genderList.Items.Add("Female");
+            this.Controls.Add(genderList);
+
+            maritalStatusList = new ComboBox()
+            {
+                //DropDownStyle = ComboBoxStyle.DropDownList,
+                Location = new Point(btnYoB.Left, genderList.Top),
+                Text = "select marital status",
+                Width = btnDob.Width,
+            };
+            maritalStatusList.Items.Add("Single");
+            maritalStatusList.Items.Add("Married");
+            maritalStatusList.Items.Add("Widowed");
+            maritalStatusList.Items.Add("Separated");
+            maritalStatusList.Items.Add("Others");
+            this.Controls.Add(maritalStatusList);
+
+            statesList = new ComboBox()
+            {
+                //DropDownStyle = ComboBoxStyle.DropDownList,
+                Location = new Point(genderList.Left, genderList.Bottom + 20),
+                Text = "select state",
+                Width = btnDob.Width,
+            };
+            statesList.AutoCompleteCustomSource.AddRange(statesAndLGAs.Keys.ToArray());
+            statesList.AutoCompleteMode = AutoCompleteMode.Suggest;
+            statesList.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            statesList.Items.AddRange(statesAndLGAs.Keys.ToArray());
+            statesList.SelectedIndexChanged += delegate 
+            {
+                lgaList.Items.Clear();
+                if (statesList.SelectedItem != null)
+                {
+                    var key = statesList.SelectedItem.ToString();
+                    if (statesAndLGAs.ContainsKey(key))
+                    {
+                        lgaList.Items.AddRange(statesAndLGAs[key]);
+                    }
+                }
+            };
+            this.Controls.Add(statesList);
+
+            lgaList = new ComboBox()
+            {
+                //DropDownStyle = ComboBoxStyle.DropDownList,
+                Location = new Point(maritalStatusList.Left, statesList.Top),
+                Text = "select LGA",
+                Width = btnDob.Width,
+            };
+            this.Controls.Add(lgaList);
+
+            camControl = new TestForm1.RegistrationForm.CameraControl(owner);
             camControl.Location = new Point(txtFirstname.Right + 50, txtFirstname.Top);
             camControl.Size = new Size(txtFirstname.Width, txtFirstname.Width);
             this.Controls.Add(camControl);
 
-            enrollmentControl = new DPFP.Gui.Enrollment.EnrollmentControl();
-            enrollmentControl.Location = new Point(camControl.Left, camControl.Bottom + 20);
-            enrollmentControl.ReaderSerialNumber = serial;
-            enrollmentControl.Size = new Size(txtFirstname.Width, txtFirstname.Width);
-            enrollmentControl.OnEnroll += EnrollmentControl_OnEnroll;
-            enrollmentControl.OnComplete += EnrollmentControl_OnComplete;
-            enrollmentControl.OnSampleQuality += EnrollmentControl_OnSampleQuality;
-            this.Controls.Add(enrollmentControl);
+            RecreateEnrollmentControl();
 
             btnSave = new Button()
             {
@@ -167,27 +223,73 @@ namespace DigitalPersona.TestForm1
             person.LastName = txtLastName.Text;
             person.OtherNames = txtOtherNames.Text;
             person.FingerTemplates = capturedTemplates;
-            person.DoB = datePicker.Value;
-            int currentYear = new DateTime().Year;
-            person.YoB = currentYear - (int)txtAge.Value;
+            if(btnDob.Checked)
+                person.DoB = datePicker.Value;
+            if (btnYoB.Checked)
+            {
+                int currentYear = new DateTime().Year;
+                person.YoB = currentYear - (int)txtAge.Value;
+            }
+            if (genderList.SelectedItem != null)
+                person.Gender = genderList.SelectedItem.ToString();
+            if (maritalStatusList.SelectedItem != null)
+                person.MaritalStatus = maritalStatusList.SelectedItem.ToString();
+            if (statesList.SelectedItem != null)
+                person.State = statesList.SelectedItem.ToString();
+            if (lgaList.SelectedItem != null)
+                person.LGA = lgaList.SelectedItem.ToString();
 
             IdpDb db = new IdpDb();
-            db.SavePerson(person);
+            string id;
+            if (db.SavePerson(person, out id))
+            {
+                camControl.Reset();
+                txtFirstname.ResetText();
+                txtFirstname.ShowHint();
+                txtLastName.ResetText();
+                txtLastName.ShowHint();
+                txtOtherNames.ResetText();
+                txtOtherNames.ShowHint();
+                datePicker.Value = DateTime.Now;
+                txtAge.Value = txtAge.Minimum;
+                genderList.SelectedItem = null;
+                genderList.Text = "select gender";
+                maritalStatusList.SelectedItem = null;
+                maritalStatusList.Text = "select marital status";
+                statesList.SelectedItem = null;
+                statesList.Text = "select state";
+                lgaList.SelectedItem = null;
+                lgaList.Text = "select LGA";
+                lgaList.Items.Clear();
+                RecreateEnrollmentControl();
 
-            capturedTemplates = null;
-            capturedTemplates = new DPFP.Template[10];
+                capturedTemplates = null;
+                capturedTemplates = new DPFP.Template[10];
+
+                //show msg box here??
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                var content = "ID: " + id + "\n" + 
+                    "Name: " + person.FirstName + " " + person.LastName;
+                QRCodeGenerator.QRCode qrCode = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.M);
+                IdWindow idWin = new TestForm1.IdWindow(qrCode.GetGraphic(20));
+                idWin.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Could not save data successfully!");
+            }
         }
 
-        private void EnrollmentControl_OnSampleQuality(object Control, string ReaderSerialNumber, 
-            int Finger, DPFP.Capture.CaptureFeedback CaptureFeedback)
-        {
-            //
-        }
+        //private void EnrollmentControl_OnSampleQuality(object Control, string ReaderSerialNumber, 
+        //    int Finger, DPFP.Capture.CaptureFeedback CaptureFeedback)
+        //{
+        //    //
+        //}
 
-        private void EnrollmentControl_OnComplete(object Control, string ReaderSerialNumber, int Finger)
-        {
-            //
-        }
+        //private void EnrollmentControl_OnComplete(object Control, string ReaderSerialNumber, int Finger)
+        //{
+        //    //
+        //}
 
         private void EnrollmentControl_OnEnroll(object Control, int FingerMask, 
             DPFP.Template Template, ref DPFP.Gui.EventHandlerStatus EventHandlerStatus)
@@ -195,16 +297,53 @@ namespace DigitalPersona.TestForm1
             capturedTemplates[FingerMask - 1] = Template;
         }
 
+        void PopulateStatesAndLGAs()
+        {
+            statesAndLGAs = new Dictionary<string, string[]>()
+            {
+                ["Abia"] = new string[] {"A", "B"},
+                ["Abuja"] = new string[] { "", "" },
+                ["Adawama"] = new string[] { "A", "D" },
+                ["Akwa Ibom"] = new string[] { "", "" },
+            };
+        }
+
+        void RecreateEnrollmentControl() //since I can't find a way to reset the control, I hv to do this
+        {
+            //first destroy it
+            if (enrollmentControl != null)
+            {
+                this.Controls.Remove(enrollmentControl);
+                enrollmentControl.OnEnroll -= EnrollmentControl_OnEnroll;
+                enrollmentControl = null;
+            }
+
+            //now recreate it
+            if (enrollmentControl == null)
+            {
+                enrollmentControl = new DPFP.Gui.Enrollment.EnrollmentControl();
+                enrollmentControl.Location = new Point(camControl.Left, camControl.Bottom + 20);
+                enrollmentControl.ReaderSerialNumber = serial;
+                enrollmentControl.Size = new Size(txtFirstname.Width, txtFirstname.Width);
+                enrollmentControl.OnEnroll += EnrollmentControl_OnEnroll;
+                //enrollmentControl.OnComplete += EnrollmentControl_OnComplete;
+                //enrollmentControl.OnSampleQuality += EnrollmentControl_OnSampleQuality;
+                this.Controls.Add(enrollmentControl);
+            }
+        }
+
         private class CameraControl : Panel
         {
             Bitmap currentBitmap;
+            bool capture = true;
 
             ComboBox camerasList;
             PictureBox picBox;
             FilterInfoCollection cameras;
             VideoCaptureDevice device;
+            Button btnCaptureRestart;
 
-            public CameraControl()
+            public CameraControl(AppWindow owner)
             {
                 picBox = new PictureBox()
                 {
@@ -242,9 +381,10 @@ namespace DigitalPersona.TestForm1
                 };
                 this.Controls.Add(camerasList);
 
-                bool capture = true;
-                Button btnCaptureRestart = new Button()
+                btnCaptureRestart = new Button()
                 {
+                    BackColor = owner.DarkColor,
+                    ForeColor = owner.LightColor,
                     Text = "Capture"
                 };
                 this.Controls.Add(btnCaptureRestart);
@@ -252,16 +392,22 @@ namespace DigitalPersona.TestForm1
                 {
                     if (capture)
                     {
-                        if (device != null && device.IsRunning) { device.Stop(); }
-                        CapturedBitmap = new Bitmap(currentBitmap, picBox.Size);
-                        btnCaptureRestart.Text = "Again";
-                        capture = !capture;
+                        if (device != null && device.IsRunning)
+                        {
+                            device.Stop();
+                            CapturedBitmap = new Bitmap(currentBitmap, picBox.Size);
+                            btnCaptureRestart.Text = "Again";
+                            capture = !capture;
+                        }
                     }
                     else
                     {
-                        if (device != null && !device.IsRunning) { device.Start(); }
-                        btnCaptureRestart.Text = "Capture";
-                        capture = !capture;
+                        if (device != null && !device.IsRunning)
+                        {
+                            device.Start();
+                            btnCaptureRestart.Text = "Capture";
+                            capture = !capture;
+                        }
                     }
                 };
 
@@ -279,6 +425,13 @@ namespace DigitalPersona.TestForm1
                 {
                     if (device != null && device.IsRunning) { device.Stop(); }
                 };
+            }
+
+            public void Reset()
+            {
+                picBox.Image = currentBitmap = null;
+                //capture = true;
+                //btnCaptureRestart.Text = "Capture";
             }
 
             public Bitmap CapturedBitmap { get; private set; }

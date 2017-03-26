@@ -71,6 +71,9 @@ namespace DigitalPersona.TestForm1
             rightFrame = new RightFrame(this);
             this.Controls.Add(rightFrame);
 
+            //login form
+            Body.Controls.Add(new LoginForm(this));
+
             FitToScreen();
         }
 
@@ -121,6 +124,7 @@ namespace DigitalPersona.TestForm1
         /// Gets or sets a value to determine if the window is fixed or can be resized
         /// </summary>
         public bool IsFixed { get; set; }
+        public LeftPanel LeftPanel { get { return pnlLeft; } }
         public Color LightColor { get { return Color.White; } }
         /// <summary>
         /// Gets or sets a value to determine if the window is maximized
