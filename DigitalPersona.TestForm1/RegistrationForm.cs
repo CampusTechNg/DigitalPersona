@@ -227,7 +227,7 @@ namespace DigitalPersona.TestForm1
                 person.DoB = datePicker.Value;
             if (btnYoB.Checked)
             {
-                int currentYear = new DateTime().Year;
+                int currentYear = DateTime.Now.Year;
                 person.YoB = currentYear - (int)txtAge.Value;
             }
             if (genderList.SelectedItem != null)
@@ -239,10 +239,19 @@ namespace DigitalPersona.TestForm1
             if (lgaList.SelectedItem != null)
                 person.LGA = lgaList.SelectedItem.ToString();
 
+            //QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            //var content = "ID: " + "user1" + "\n" +
+            //    "Name: " + person.FirstName + " " + person.LastName;
+            //QRCodeGenerator.QRCode qrCode = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.M);
+            //IdCardWindow idCardWin = new TestForm1.IdCardWindow(person, qrCode.GetGraphic(20));
+            //idCardWin.ShowDialog();
+
             IdpDb db = new IdpDb();
             string id;
             if (db.SavePerson(person, out id))
             {
+                person.ID = id;
+
                 camControl.Reset();
                 txtFirstname.ResetText();
                 txtFirstname.ShowHint();
@@ -266,13 +275,8 @@ namespace DigitalPersona.TestForm1
                 capturedTemplates = null;
                 capturedTemplates = new DPFP.Template[10];
 
-                //show msg box here??
-                QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                var content = "ID: " + id + "\n" + 
-                    "Name: " + person.FirstName + " " + person.LastName;
-                QRCodeGenerator.QRCode qrCode = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.M);
-                IdWindow idWin = new TestForm1.IdWindow(qrCode.GetGraphic(20));
-                idWin.ShowDialog();
+                IdCardWindow idCardWin = new TestForm1.IdCardWindow(person);
+                idCardWin.ShowDialog();
             }
             else
             {
@@ -305,6 +309,18 @@ namespace DigitalPersona.TestForm1
                 ["Abuja"] = new string[] { "", "" },
                 ["Adawama"] = new string[] { "A", "D" },
                 ["Akwa Ibom"] = new string[] { "", "" },
+                ["Bauchi"] = new string[] { "A", "B" },
+                ["Bayelsa"] = new string[] { "", "" },
+                ["Benue"] = new string[] { "A", "D" },
+                ["Borno"] = new string[] { "", "" },
+                ["Cross River"] = new string[] { "A", "B" },
+                ["Delta"] = new string[] { "", "" },
+                ["Adawama"] = new string[] { "A", "D" },
+                ["Ebonyi"] = new string[] { "", "" },
+                ["Enugu"] = new string[] { "A", "B" },
+                ["Edo"] = new string[] { "", "" },
+                ["Ekiti"] = new string[] { "A", "D" },
+                ["Gombe"] = new string[] { "", "" },
             };
         }
 

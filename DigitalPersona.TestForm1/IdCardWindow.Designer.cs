@@ -1,6 +1,6 @@
 ﻿namespace DigitalPersona.TestForm1
 {
-    partial class IdWindow
+    partial class IdCardWindow
     {
         /// <summary>
         /// Required designer variable.

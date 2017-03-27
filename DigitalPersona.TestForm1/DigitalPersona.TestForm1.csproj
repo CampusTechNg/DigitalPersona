@@ -93,11 +93,11 @@
     </Compile>
     <Compile Include="Idp.cs" />
     <Compile Include="IdpDb.cs" />
-    <Compile Include="IdWindow.cs">
+    <Compile Include="IdCardWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="IdWindow.Designer.cs">
-      <DependentUpon>IdWindow.cs</DependentUpon>
+    <Compile Include="IdCardWindow.Designer.cs">
+      <DependentUpon>IdCardWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>UserControl</SubType>

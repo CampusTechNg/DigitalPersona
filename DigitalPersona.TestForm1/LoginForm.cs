@@ -50,6 +50,7 @@ namespace DigitalPersona.TestForm1
             };
             this.Controls.Add(txtPassword);
             this.Controls.Add(lblLine2);
+            txtPassword.KeyDown += delegate { txtPassword.PasswordChar = '*'; };
 
             btnLogin = new Button()
             {

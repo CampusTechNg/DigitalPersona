@@ -52,6 +52,8 @@ namespace DigitalPersona.TestForm1
                 {
                     Idp person = new Idp();
 
+                    person.ID = dr.GetString("id");
+
                     person.FirstName = dr.GetString("first_name");
                     person.LastName = dr.GetString("last_name");
                     person.OtherNames = dr.GetString("other_names");
@@ -100,7 +102,8 @@ namespace DigitalPersona.TestForm1
                 insertPhoto = new MySqlCommand(),
                 insertFingers = new MySqlCommand();
             insertBio.Connection = insertPhoto.Connection = insertFingers.Connection = mySqlConnection;
-            id = DateTime.Now.ToString();
+            id = "IDP-" + DateTime.Now.ToString();
+            id = id.Replace(' ', '-').Replace('/', '|');
 
             insertBio.CommandText =
                 "INSERT INTO bios VALUES(@id, @first_name, @last_name, @other_names, @dob, @yob, @gender, @marital_status, @state, @lga)";

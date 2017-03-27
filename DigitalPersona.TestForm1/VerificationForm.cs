@@ -21,6 +21,9 @@ namespace DigitalPersona.TestForm1
 
         PictureBox picBox;
         Label lblName, lblAge, lblGender, lblMaritalStatus, lblState, lblLGA;
+        Button btnCard;
+
+        Idp FoundPerson;
 
         public VerificationForm(AppWindow owner)
         {
@@ -42,6 +45,25 @@ namespace DigitalPersona.TestForm1
                 Size = new Size(300, 300)
             };
             this.Controls.Add(picBox);
+
+            btnCard = new Button()
+            {
+                BackColor = owner.DarkColor,
+                ForeColor = owner.LightColor,
+                Font = new Font(this.Font.FontFamily, 16.0f, FontStyle.Bold),
+                Size = new Size(picBox.Width, 50),
+                Text = "Show Card",
+                Visible = false,
+            };
+            this.Controls.Add(btnCard);
+            btnCard.Click += delegate 
+            {
+                if (FoundPerson != null)
+                {
+                    IdCardWindow idCardWin = new TestForm1.IdCardWindow(FoundPerson);
+                    idCardWin.ShowDialog();
+                }
+            };
 
             lblName = new Label()
             {
@@ -101,6 +123,7 @@ namespace DigitalPersona.TestForm1
             {
                 verificationControl.Location = new Point((this.Width - verificationControl.Width) / 2, 20);
                 picBox.Location = new Point(verificationControl.Left - picBox.Width, verificationControl.Bottom + 20);
+                btnCard.Location = new Point(picBox.Left, picBox.Bottom + 20);
                 lblName.Location = new Point(picBox.Right + 50, picBox.Top);
                 lblAge.Location = new Point(lblName.Left, lblName.Bottom + 20);
                 lblGender.Location = new Point(lblName.Left, lblAge.Bottom + 20);
@@ -113,7 +136,9 @@ namespace DigitalPersona.TestForm1
         private void VerificationControl_OnComplete(object Control, DPFP.FeatureSet FeatureSet, 
             ref DPFP.Gui.EventHandlerStatus EventHandlerStatus)
         {
+            FoundPerson = null;
             picBox.Image = null;
+            btnCard.Visible = false;
             lblName.ResetText();
             lblAge.ResetText();
             lblGender.ResetText();
@@ -138,26 +163,30 @@ namespace DigitalPersona.TestForm1
                         {
                             //MessageBox.Show(person.FirstName + ", finger: " + finger);
 
+                            FoundPerson = person;
+
                             //pic
                             if (person.Photo != null)
                             {
                                 picBox.Image = new Bitmap(person.Photo, picBox.Size);
                             }
 
+                            btnCard.Visible = true;
+
                             string nm = (!string.IsNullOrEmpty(person.FirstName) ? person.FirstName + " " : "") +
                                 (!string.IsNullOrEmpty(person.LastName) ? person.LastName + " " : "") +
                                 (!string.IsNullOrEmpty(person.OtherNames) ? person.OtherNames + " " : "");
                             lblName.Text = nm;
-                            if (person.DoB != null)
+                            if (person.YoB > 0)
+                            {
+                                int age = DateTime.Now.Year - person.YoB;
+                                lblAge.Text = "About " + age + " year(s) old";
+                            }
+                            else
                             {
                                 int age = DateTime.Now.Year - person.DoB.Year;
                                 lblAge.Text = person.DoB.Day + "/" + person.DoB.Month + "/" + person.DoB.Year +
                                     " (" + age + " year(s) old)";
-                            }
-                            else
-                            {
-                                int age = DateTime.Now.Year - person.YoB;
-                                lblAge.Text = "About " + age + " year(s) old";
                             }
                             lblGender.Text = person.Gender;
                             lblMaritalStatus.Text = person.MaritalStatus;
