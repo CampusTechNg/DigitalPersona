@@ -38,7 +38,7 @@ namespace DigitalPersona.TestForm1
             txtFirstname = new HintedTextBox("first name")
             {
                 BorderStyle = System.Windows.Forms.BorderStyle.None,
-                Font = new System.Drawing.Font(this.Font.FontFamily, 11.0F),
+                Font = new System.Drawing.Font(this.Font.FontFamily, 16.0F),
                 Width = 300
             };
             txtFirstname.Location = new Point(100, 20);
@@ -83,9 +83,11 @@ namespace DigitalPersona.TestForm1
             btnDob = new RadioButton()
             {
                 Checked = true,
+                Font = txtFirstname.Font,
+                Height = 30,
                 Location = new Point(txtOtherNames.Location.X, txtOtherNames.Bottom + 20),
                 Text = "I know my date of birth",
-                Width = (txtOtherNames.Width / 2) - 10
+                Width = txtFirstname.Width,
             };
             btnDob.CheckedChanged += delegate 
             {
@@ -93,10 +95,21 @@ namespace DigitalPersona.TestForm1
             };
             this.Controls.Add(btnDob);
 
+            datePicker = new DateTimePicker()
+            {
+                Enabled = btnDob.Checked,
+                Font = txtFirstname.Font,
+                Location = new Point(btnDob.Left + 20, btnDob.Bottom + 5),
+                Width = btnDob.Width - 20
+            };
+            this.Controls.Add(datePicker);
+
             btnYoB = new RadioButton()
             {
                 Checked = false,
-                Location = new Point(btnDob.Right + 10, btnDob.Top),
+                Font = btnDob.Font,
+                Height = btnDob.Height,
+                Location = new Point(btnDob.Left, datePicker.Bottom + 20),
                 Text = "I may know my age",
                 Width = btnDob.Width
             };
@@ -106,14 +119,6 @@ namespace DigitalPersona.TestForm1
             };
             this.Controls.Add(btnYoB);
 
-            datePicker = new DateTimePicker()
-            {
-                Enabled = btnDob.Checked,
-                Location = new Point(btnDob.Left, btnDob.Bottom + 5),
-                Width = btnDob.Width
-            };
-            this.Controls.Add(datePicker);
-
             txtAge = new NumericUpDown()//HintedTextBox("estimated age")
             {
                 BorderStyle = txtFirstname.BorderStyle,
@@ -121,9 +126,9 @@ namespace DigitalPersona.TestForm1
                 Font = txtFirstname.Font,
                 Maximum = 200,
                 Minimum = 0,
-                Width = btnYoB.Width
+                Width = datePicker.Width
             };
-            txtAge.Location = new Point(btnYoB.Left, btnYoB.Bottom + 5);
+            txtAge.Location = new Point(btnYoB.Left + 20, btnYoB.Bottom + 5);
             //UnderlineFor lblLine4 = new UnderlineFor(txtAge, owner.DarkColor, SystemColors.GrayText)
             //{
             //    BackColor = SystemColors.GrayText,
@@ -131,13 +136,14 @@ namespace DigitalPersona.TestForm1
             //lblLine4.Location = new Point(txtAge.Location.X, txtAge.Bottom);
             this.Controls.Add(txtAge);
             //this.Controls.Add(lblLine4);
-
+            
             genderList = new ComboBox()
             {
                 //DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(datePicker.Left, datePicker.Bottom + 20),
+                Font = txtFirstname.Font,
+                Location = new Point(txtFirstname.Left, txtAge.Bottom + 20),
                 Text = "select gender",
-                Width = btnDob.Width,
+                Width = txtFirstname.Width,
             };
             genderList.Items.Add("Male");
             genderList.Items.Add("Female");
@@ -146,9 +152,10 @@ namespace DigitalPersona.TestForm1
             maritalStatusList = new ComboBox()
             {
                 //DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(btnYoB.Left, genderList.Top),
+                Font = txtFirstname.Font,
+                Location = new Point(txtFirstname.Left, genderList.Bottom + 20),
                 Text = "select marital status",
-                Width = btnDob.Width,
+                Width = txtFirstname.Width,
             };
             maritalStatusList.Items.Add("Single");
             maritalStatusList.Items.Add("Married");
@@ -160,9 +167,10 @@ namespace DigitalPersona.TestForm1
             statesList = new ComboBox()
             {
                 //DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(genderList.Left, genderList.Bottom + 20),
+                Font = txtFirstname.Font,
+                Location = new Point(txtFirstname.Left, maritalStatusList.Bottom + 20),
                 Text = "select state",
-                Width = btnDob.Width,
+                Width = txtFirstname.Width,
             };
             statesList.AutoCompleteCustomSource.AddRange(statesAndLGAs.Keys.ToArray());
             statesList.AutoCompleteMode = AutoCompleteMode.Suggest;
@@ -185,9 +193,10 @@ namespace DigitalPersona.TestForm1
             lgaList = new ComboBox()
             {
                 //DropDownStyle = ComboBoxStyle.DropDownList,
-                Location = new Point(maritalStatusList.Left, statesList.Top),
+                Font = txtFirstname.Font,
+                Location = new Point(txtFirstname.Left, statesList.Bottom + 20),
                 Text = "select LGA",
-                Width = btnDob.Width,
+                Width = txtFirstname.Width,
             };
             this.Controls.Add(lgaList);
 
@@ -303,24 +312,50 @@ namespace DigitalPersona.TestForm1
 
         void PopulateStatesAndLGAs()
         {
+            //stopped at: Boripe
             statesAndLGAs = new Dictionary<string, string[]>()
             {
-                ["Abia"] = new string[] {"A", "B"},
-                ["Abuja"] = new string[] { "", "" },
+                ["Abia"] = new string[] { "Aba North", "Aba South", "Arochukwu", "Bende" },
+                ["Abuja"] = new string[] { "Abaji", "" },
                 ["Adawama"] = new string[] { "A", "D" },
-                ["Akwa Ibom"] = new string[] { "", "" },
-                ["Bauchi"] = new string[] { "A", "B" },
+                ["Anambra"] = new string[] { "Aguata", "Anambra East", "Anambra West", "Anaocha", "Awka North", "Awka South",
+                "Ayamelum"},
+                ["Akwa Ibom"] = new string[] { "Abak", "" },
+                ["Bauchi"] = new string[] { "Alkaleri", "Bauchi", "Bogoro" },
                 ["Bayelsa"] = new string[] { "", "" },
-                ["Benue"] = new string[] { "A", "D" },
-                ["Borno"] = new string[] { "", "" },
-                ["Cross River"] = new string[] { "A", "B" },
-                ["Delta"] = new string[] { "", "" },
-                ["Adawama"] = new string[] { "A", "D" },
-                ["Ebonyi"] = new string[] { "", "" },
-                ["Enugu"] = new string[] { "A", "B" },
-                ["Edo"] = new string[] { "", "" },
-                ["Ekiti"] = new string[] { "A", "D" },
-                ["Gombe"] = new string[] { "", "" },
+                ["Benue"] = new string[] { "Agatu", "Apa", "Ado" },
+                ["Borno"] = new string[] { "Abadam", "Askira/Uba", "Bama", "Bayo", "Biu" },
+                ["Cross River"] = new string[] { "Abi", "Akamkpa", "Akpabuyo", "Bakassi", "Bekwarra", "Biase", "Boki" },
+                ["Delta"] = new string[] { "Aniocha North", "Aniocha South", "Bomadi" },
+                ["Ebonyi"] = new string[] { "Abakaliki", "Afikpo North", "Afikpo South (Edda)" },
+                ["Enugu"] = new string[] { "Aninri", "Awgu" },
+                ["Edo"] = new string[] { "Akoko-Edo", "" },
+                ["Ekiti"] = new string[] { "Ado Ekiti", "D" },
+                ["Gombe"] = new string[] { "Akko", "Balanga", "Billiri" },
+                ["Imo"] = new string[] { "Aboh Mbaise", "Ahiazu Mbaise" },
+                ["Jigawa"] = new string[] { "Auyo", "Babura", "Biriniwa", "Birnin Kudu" },
+                ["Kaduna"] = new string[] { "Birnin Gwari", "D" },
+                ["Kano"] = new string[] { "Ajingi", "Albasu", "Bagwai", "Bebeji", "Bichi" },
+                ["Katsina"] = new string[] { "Bakori", "Batagarawa", "Batsari", "Baure", "Bindawa" },
+                ["Kebbi"] = new string[] { "Aleiro", "Arewa Dandi", "Argungu", "Augie", "Bagudo", "Birnin Kebbi" },
+                ["Kogi"] = new string[] { "Adavi", "Ajaokuta", "Ankpa", "Bassa" },
+                ["Kwara"] = new string[] { "Asa", "Baruten" },
+                ["Lagos"] = new string[] { "Agege", "Ajeromi-Ifelodun", "Alimosho", "Amuwo-Odofin", "Apapa", "Badagry" },
+                ["Nasarawa"] = new string[] { "Akwanga", "Awe" },
+                ["Niger"] = new string[] { "Agaie", "Agwara", "Bida", "Borgu" },
+                ["Ogun"] = new string[] { "Abeokuta North", "Abeokuta South", "Ado-Odo/Ota", },
+                ["Ondo"] = new string[] { "Akoko North-East", "Akoko North-West", "Akoko South-West", "Akoko South-East",
+                "Akure North", "Akure South"},
+                ["Osun"] = new string[] { "Atakunmosa East", "Atakunmosa West", "Aiyedaade", "Aiyedire", "Boluwaduro",
+                "Boripe"},
+                ["Oyo"] = new string[] { "Afijio", "Atiba", "Atisbo" },
+                ["Plateau"] = new string[] { "Bokkos", "Barkin Ladi", "Bassa" },
+                ["Rivers"] = new string[] { "Abua/Odual", "Ahoada East", "Ahoada West", "Akuku-Toru", "Andoni", "Asari-Toru",
+                "Bonny"},
+                ["Sokoto"] = new string[] { "Binji", "Bodinga" },
+                ["Taraba"] = new string[] { "Ardo Kola", "Bali" },
+                ["Yobe"] = new string[] { "Bade", "D" },
+                ["Zamfara"] = new string[] { "Anka", "Bakura", "Birnin Magaji/Kiyaw" },
             };
         }
 

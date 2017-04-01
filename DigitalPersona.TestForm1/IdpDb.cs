@@ -52,17 +52,27 @@ namespace DigitalPersona.TestForm1
                 {
                     Idp person = new Idp();
 
-                    person.ID = dr.GetString("id");
+                    if (!dr.IsDBNull(dr.GetOrdinal("id")))
+                        person.ID = dr.GetString("id");
 
-                    person.FirstName = dr.GetString("first_name");
-                    person.LastName = dr.GetString("last_name");
-                    person.OtherNames = dr.GetString("other_names");
-                    person.DoB = dr.GetDateTime("dob");
-                    person.YoB = dr.GetInt32("yob");
-                    person.Gender = dr.GetString("gender");
-                    person.MaritalStatus = dr.GetString("marital_status");
-                    person.State = dr.GetString("state");
-                    person.LGA = dr.GetString("lga");
+                    if (!dr.IsDBNull(dr.GetOrdinal("first_name")))
+                        person.FirstName = dr.GetString("first_name");
+                    if (!dr.IsDBNull(dr.GetOrdinal("last_name")))
+                        person.LastName = dr.GetString("last_name");
+                    if (!dr.IsDBNull(dr.GetOrdinal("other_names")))
+                        person.OtherNames = dr.GetString("other_names");
+                    if (!dr.IsDBNull(dr.GetOrdinal("dob")))
+                        person.DoB = dr.GetDateTime("dob");
+                    if (!dr.IsDBNull(dr.GetOrdinal("yob")))
+                        person.YoB = dr.GetInt32("yob");
+                    if (!dr.IsDBNull(dr.GetOrdinal("gender")))
+                        person.Gender = dr.GetString("gender");
+                    if (!dr.IsDBNull(dr.GetOrdinal("marital_status")))
+                        person.MaritalStatus = dr.GetString("marital_status");
+                    if (!dr.IsDBNull(dr.GetOrdinal("state")))
+                        person.State = dr.GetString("state");
+                    if (!dr.IsDBNull(dr.GetOrdinal("lga")))
+                        person.LGA = dr.GetString("lga");
 
                     for (int index = 0; index < person.FingerTemplates.Length; index++)
                     {

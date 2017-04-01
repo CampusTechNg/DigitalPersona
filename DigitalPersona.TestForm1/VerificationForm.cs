@@ -148,7 +148,8 @@ namespace DigitalPersona.TestForm1
 
             IdpDb db = new IdpDb();
             bool breakOuter = false;
-            foreach (Idp person in db.GetPersons())
+            var persons = db.GetPersons();
+            foreach (Idp person in persons)
             {
                 int finger = 0;
                 foreach(var template in person.FingerTemplates)
