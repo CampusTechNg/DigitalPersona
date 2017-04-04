@@ -636,6 +636,7 @@ namespace DigitalPersona.TestForm1
     {
         RegistrationForm regForm;
         VerificationForm veriForm;
+
         public LeftPanel(AppWindow owner)
         {
             this.BackColor = owner.DarkColor;
@@ -698,11 +699,20 @@ namespace DigitalPersona.TestForm1
                 owner.Text = btnVeri.Text + " - IDPs Biometric Enumeration";
             };
             this.Controls.Add(btnVeri);
+            //report
+            LeftPanelButton btnRep = new LeftPanelButton(owner)
+            {
+                Text = "Analitics"
+            };
+            btnRep.Location = new Point(btnVeri.Left, btnVeri.Bottom + 10);
+            btnRep.Click += delegate
+            {
+                owner.Body.Controls.Clear();
+                owner.Body.Controls.Add(new ReportForm(owner)); //returns a new report form every time
+                owner.Text = btnRep.Text + " - IDPs Biometric Enumeration";
+            };
+            this.Controls.Add(btnRep);
             //sync
-
-            //
-            btnReg.Siblings.Add(btnVeri);
-            btnVeri.Siblings.Add(btnReg);
 
             owner.RegisterToMoveWindow(this);
             owner.RegisterToMoveWindow(lblLogo);
@@ -727,8 +737,14 @@ namespace DigitalPersona.TestForm1
 
             this.Click += delegate
             {
+                foreach(Control control in this.Parent.Controls)
+                {
+                    if (control is LeftPanelButton && this != control)
+                    {
+                        ((LeftPanelButton)control).Unhighlight();
+                    }
+                }
                 this.Highlight();
-                this.Siblings.ForEach(c => c.Unhighlight());
             };
 
             this.Unhighlight();
@@ -743,6 +759,5 @@ namespace DigitalPersona.TestForm1
             this.BackColor = owner.DarkColor;
             this.ForeColor = owner.LightColor;
         }
-        public List<LeftPanelButton> Siblings { get; set; } = new List<LeftPanelButton>();
     }
 }
