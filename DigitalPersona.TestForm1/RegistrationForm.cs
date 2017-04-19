@@ -249,11 +249,10 @@ namespace DigitalPersona.TestForm1
                 person.LGA = lgaList.SelectedItem.ToString();
 
             //QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            //var content = "ID: " + "user1" + "\n" +
-            //    "Name: " + person.FirstName + " " + person.LastName;
+            //var content = "IDP-BOR-001";
             //QRCodeGenerator.QRCode qrCode = qrGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.M);
-            //IdCardWindow idCardWin = new TestForm1.IdCardWindow(person, qrCode.GetGraphic(20));
-            //idCardWin.ShowDialog();
+            //Image img = qrCode.GetGraphic(20);
+            //img.Save(@"C:\Users\frank\Pictures\IDP-BOR-001.jpg");
 
             IdpDb db = new IdpDb();
             string id;

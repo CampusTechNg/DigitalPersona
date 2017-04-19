@@ -668,7 +668,7 @@ namespace DigitalPersona.TestForm1
             //registration
             LeftPanelButton btnReg = new LeftPanelButton(owner)
             {
-                Text = "Enrollment"
+                Text = "Enroll"
             };
             btnReg.Location = new Point(this.Width - btnReg.Width, lblName.Bottom + 10);
             btnReg.Click += delegate 
@@ -685,7 +685,7 @@ namespace DigitalPersona.TestForm1
             //verification
             LeftPanelButton btnVeri = new LeftPanelButton(owner)
             {
-                Text = "Verification"
+                Text = "Verify"
             };
             btnVeri.Location = new Point(btnReg.Left, btnReg.Bottom + 10);
             btnVeri.Click += delegate
